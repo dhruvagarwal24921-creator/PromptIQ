@@ -12,6 +12,10 @@ backend/node_modules/
 **/.env
 .dev.vars
 
+# Personal deployment scripts & internal guides
+deploy-worker.bat
+imp.md
+
 # Cloudflare Wrangler runtime cache & credentials
 .wrangler/
 */.wrangler/
