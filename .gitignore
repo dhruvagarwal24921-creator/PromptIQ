@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+*/node_modules/
+tests/node_modules/
+backend/node_modules/
+
+# Environment and Secret configuration files
+.env
+.env.*
+!.env.example
+*.env
+**/.env
+.dev.vars
+
+# Cloudflare Wrangler runtime cache & credentials
+.wrangler/
+*/.wrangler/
+cloudflare-worker/.wrangler/
+
+# Test build artifacts & test outputs
+.ext-under-test/
+tests/.ext-under-test/
+tests/out/
+out/
+
+# OS and Editor metadata
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="popup.css">
+  <style>
+    body {
+      font-family: sans-serif;
+      width: 380px;
+      padding: 10px;
+      margin: 0;
+    }
+
+    .top-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .top-left {
+      flex: 1;
+    }
+
+    .top-right {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-left: 10px;
+      flex-shrink: 0;
+    }
+
+    .popup-logo {
+      width: 58px;
+      height: 58px;
+      object-fit: contain;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      display: block;
+    }
+
+    .header {
+      font-size: 1.25em;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .control-row {
+      margin-bottom: 8px;
+    }
+
+    .manual-hint {
+      margin-top: 4px;
+      font-size: 0.8em;
+      color: #0b57d0;
+      font-weight: 500;
+      line-height: 1.2;
+    }
+
+    .manual-hint kbd {
+      background: #e8f0fe;
+      border: 1px solid #c2e7ff;
+      border-radius: 4px;
+      padding: 1px 4px;
+      font-family: inherit;
+      font-weight: 600;
+      color: #004a77;
+    }
+
+    .status-row {
+      margin-bottom: 6px;
+      font-weight: bold;
+      font-size: 0.95em;
+    }
+
+    .stats-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      font-size: 0.9em;
+      background: #eee;
+      padding: 10px;
+      border-radius: 6px;
+    }
+
+    .export-section {
+      margin: 4px 0 10px;
+    }
+
+    .export-title {
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+
+    .export-btn {
+      display: block;
+      width: 100%;
+      padding: 7px;
+      margin-bottom: 6px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      background: #007bff;
+      color: #fff;
+    }
+
+    .export-btn:disabled {
+      opacity: 0.55;
+      cursor: default;
+    }
+
+    .export-hint {
+      font-size: 0.8em;
+      color: #666;
+      margin-bottom: 4px;
+    }
+
+    #export-status {
+      display: none;
+      font-size: 0.85em;
+      line-height: 1.35;
+      padding: 6px 8px;
+      border-radius: 4px;
+    }
+
+    #export-status.success {
+      display: block;
+      background: #e6f4ea;
+      color: #1a7f37;
+    }
+
+    #export-status.error {
+      display: block;
+      background: #fdecea;
+      color: #b3261e;
+    }
+
+    #export-status.info {
+      display: block;
+      background: #e8f0fe;
+      color: #1a73e8;
+    }
+
+    .tagline-box {
+      margin-top: 10px;
+      background: #eee;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 9px 8px;
+      font-size: 0.85em;
+      font-weight: 600;
+      color: #333;
+      text-align: center;
+      white-space: nowrap;
+      letter-spacing: 0.1px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <div class="top-section">
+      <div class="top-left">
+        <div class="header">PromptIQ</div>
+
+        <div class="control-row">
+          <label>
+            <input type="checkbox" id="toggle-enhance"> Auto-enhance enabled
+          </label>
+          <div id="manual-hint" class="manual-hint" style="display: none;">Press <kbd>Alt + E</kbd> to use manual</div>
+        </div>
+
+        <div class="status-row">
+          Status: <span id="status-text">Checking...</span>
+        </div>
+      </div>
+
+      <div class="top-right">
+        <img src="../icons/icon.png" alt="PromptIQ Logo" class="popup-logo">
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div>Total: <span id="stat-total">0</span></div>
+      <div>Today: <span id="stat-today">0</span></div>
+      <div>Top Site: <span id="stat-topsite">-</span></div>
+    </div>
+
+    <hr>
+
+    <div class="export-section">
+      <div class="export-title">Session Migration</div>
+      <button id="migrate-session" class="export-btn" type="button" style="background: linear-gradient(135deg, #1a73e8, #0b57d0); margin-bottom: 6px;">📦 Migrate Session (ZIP)</button>
+      <div class="export-hint" style="margin-bottom: 6px;">Downloads complete migration ZIP (AI summary + artifacts folder with images, docs & code).</div>
+      <div id="export-status" role="status" aria-live="polite"></div>
+    </div>
+
+    <hr>
+
+    <div class="backend-section" style="margin: 4px 0 8px;">
+      <details style="font-size: 0.85em;">
+        <summary style="cursor: pointer; color: #555; font-weight: 600; outline: none; user-select: none;">⚙️ Backend Settings</summary>
+        <div style="margin-top: 6px; padding: 4px 0;">
+          <input type="text" id="backend-url-input" placeholder="https://<subdomain>.workers.dev or http://127.0.0.1:3000" style="width: 100%; box-sizing: border-box; padding: 6px 8px; font-size: 0.85em; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 4px;">
+          <button id="save-backend-btn" type="button" style="width: 100%; padding: 5px; font-size: 0.85em; font-weight: 600; border: none; border-radius: 4px; background: #555; color: #fff; cursor: pointer;">Save Backend URL</button>
+          <div id="backend-url-status" style="font-size: 0.8em; margin-top: 4px; display: none;"></div>
+        </div>
+      </details>
+    </div>
+
+    <hr>
+
+    <div class="tagline-box">
+      Never lose your flow with you personal Prompt Engineer
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+
+</html>

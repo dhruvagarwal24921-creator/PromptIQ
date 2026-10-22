@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Editor Harness</title>
+  <style>
+    .editor { border: 1px solid #ccc; min-height: 100px; padding: 10px; margin-bottom: 10px; width: 400px; font-family: monospace; white-space: pre-wrap; }
+    textarea.editor { width: 400px; height: 100px; }
+  </style>
+</head>
+<body>
+  <h2>Editor Harness</h2>
+  
+  <div>
+    <h3>1. Plain Textarea</h3>
+    <textarea id="ed-textarea" class="editor"></textarea>
+    <button onclick="testEditor('ed-textarea')">Test</button>
+    <span id="res-textarea"></span>
+  </div>
+  
+  <div>
+    <h3>2. Simple ContentEditable</h3>
+    <div id="ed-ce" class="editor" contenteditable="true"></div>
+    <button onclick="testEditor('ed-ce')">Test</button>
+    <span id="res-ce"></span>
+  </div>
+  
+  <div>
+    <h3>3. Strict ContentEditable (ProseMirror mock)</h3>
+    <div id="ed-pm" class="editor" contenteditable="true"></div>
+    <button onclick="testEditor('ed-pm')">Test</button>
+    <span id="res-pm"></span>
+  </div>
+  
+  <script src="../content/editor.js"></script>
+  <script src="../content/ui.js"></script>
+  <script>
+    // Strict contenteditable mock: blocks textContent changes, requires paste/insertText
+    const pm = document.getElementById('ed-pm');
+    pm.addEventListener('paste', (e) => {
+      e.preventDefault();
+      const text = e.clipboardData.getData('text/plain');
+      document.execCommand('insertText', false, text);
+    });
+
+    const sampleText = "Act as an experienced dev.\nFix this:\n```js\nconst a = 1;\n```";
+
+    function testEditor(id) {
+      const el = document.getElementById(id);
+      window.__ATE__.editor.writeText(el, sampleText);
+      
+      const readBack = window.__ATE__.editor.readText(el);
+      const resSpan = document.getElementById('res-' + id.split('-')[1]);
+      
+      if (readBack.replace(/\\s+/g, '') === sampleText.replace(/\\s+/g, '')) {
+        resSpan.textContent = 'PASS';
+        resSpan.style.color = 'green';
+      } else {
+        resSpan.textContent = 'FAIL';
+        resSpan.style.color = 'red';
+      }
+    }
+    
+    // UI Tests
+    function testSpinner() { window.__ATE__.ui.showSpinner(document.getElementById('ed-textarea')); }
+    function testUndo() { window.__ATE__.ui.showUndo(document.getElementById('ed-textarea'), () => alert('Undo clicked!')); }
+    function testWarning() { window.__ATE__.ui.showWarning(document.getElementById('ed-textarea'), 'Could not connect. Next Enter sends original.'); }
+    function testHide() { window.__ATE__.ui.hide(); }
+  </script>
+  
+  <hr>
+  <h3>UI Testing</h3>
+  <button onclick="testSpinner()">Show Spinner</button>
+  <button onclick="testUndo()">Show Undo</button>
+  <button onclick="testWarning()">Show Warning</button>
+  <button onclick="testHide()">Hide</button>
+</body>
+</html>

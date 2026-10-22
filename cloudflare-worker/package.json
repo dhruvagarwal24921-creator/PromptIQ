@@ -1,0 +1,10 @@
+{
+  "name": "promptiq-worker",
+  "version": "1.0.0",
+  "description": "PromptIQ backend running on Cloudflare Workers",
+  "main": "src/index.js",
+  "scripts": {
+    "deploy": "npx --package=wrangler --package=@cloudflare/workerd-windows-64 wrangler deploy",
+    "dev": "npx --package=wrangler --package=@cloudflare/workerd-windows-64 wrangler dev"
+  }
+}

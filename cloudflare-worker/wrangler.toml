@@ -1,0 +1,9 @@
+name = "promptiq-backend"
+main = "src/index.js"
+compatibility_date = "2024-10-01"
+
+[vars]
+# Note: For production deployments, store your API key as an encrypted Cloudflare secret
+# using: npx wrangler secret put DAHL_API_KEY
+DAHL_MODEL = "MiniMaxAI/MiniMax-M2.7"
+MAX_DRAFT_CHARS = "20000"
